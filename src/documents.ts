@@ -1,4 +1,15 @@
-export const documents = [
+/**
+ * Knowledge base documents.
+ * Sample articles covering AI/ML and energy efficiency topics.
+ */
+
+export interface Document {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export const documents: Document[] = [
   {
     id: "1",
     title: "Smart Thermostat Energy Savings",

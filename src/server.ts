@@ -1,11 +1,18 @@
+/**
+ * Express server for knowledge base search.
+ * Provides a web UI and REST API for semantic document search.
+ * Run with: npm run serve
+ */
+
 import express from "express";
-import { ChromaClient } from "chromadb";
+import { getCollection } from "./db";
 import { embed } from "./embedder";
+import { PORT, SEARCH_RESULTS } from "./config";
 
 const app = express();
-const client = new ChromaClient({ path: "http://localhost:8000" });
-const collection = await client.getCollection({ name: "knowledge-base" });
+const collection = await getCollection();
 
+/** Serves the search UI */
 app.get("/", (_, res) => res.send(`
 <!DOCTYPE html>
 <html>
@@ -32,12 +39,18 @@ app.get("/", (_, res) => res.send(`
 </html>
 `));
 
+/**
+ * Search API endpoint.
+ * @param q - Query string to search for
+ * @returns Top matching documents with similarity scores
+ */
 app.get("/search", async (req, res) => {
-  const queryEmbedding = await embed([String(req.query.q)]);
+  const query = String(req.query.q);
+  const queryEmbedding = await embed([query]);
 
   const results = await collection.query({
     queryEmbeddings: queryEmbedding,
-    nResults: 3
+    nResults: SEARCH_RESULTS
   });
 
   const formatted = results.ids[0].map((id, i) => ({
@@ -50,4 +63,4 @@ app.get("/search", async (req, res) => {
   res.json(formatted);
 });
 
-app.listen(3000, () => console.log("Server running at http://localhost:3000"));
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

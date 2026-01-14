@@ -1,11 +1,14 @@
-import { ChromaClient } from "chromadb";
+/**
+ * Ingestion script - embeds documents and stores them in ChromaDB.
+ * Run with: npm run ingest
+ */
+
+import { createCollection } from "../db";
 import { documents } from "../documents";
 import { embed } from "../embedder";
+import { EMBEDDING_MODEL } from "../config";
 
-const client = new ChromaClient({ path: "http://localhost:8000" });
-
-await client.deleteCollection({ name: "knowledge-base" }).catch(() => {});
-const collection = await client.createCollection({ name: "knowledge-base" });
+const collection = await createCollection();
 
 const texts = documents.map(d => `${d.title}\n\n${d.content}`);
 const embeddings = await embed(texts);
@@ -13,8 +16,8 @@ const embeddings = await embed(texts);
 await collection.add({
   ids: documents.map(d => d.id),
   documents: texts,
-  embeddings: embeddings,
+  embeddings,
   metadatas: documents.map(d => ({ title: d.title }))
 });
 
-console.log("Ingested", documents.length, "documents using Ollama mxbai-embed-large");
+console.log(`Ingested ${documents.length} documents using Ollama ${EMBEDDING_MODEL}`);

@@ -10,8 +10,7 @@
   "dependencies": {
     "chromadb": "^1.9.0",
     "express": "^4.21.0",
-    "ollama": "^0.5.0",
-    "p-map": "^7.0.0"
+    "ollama": "^0.5.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
