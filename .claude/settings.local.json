@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(del \"c:\\\\dev\\\\rag\\\\src\\\\bootstrap.ts\")"
-    ]
-  }
-}
